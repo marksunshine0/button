@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈粒粒的陷阱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF4B91',
+                        secondary: '#FFD1DA',
+                        accent: '#FF9EB1',
+                    },
+                    fontFamily: {
+                        cute: ['"Comic Sans MS"', '"Marker Felt"', 'Arial', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .button-hover {
+                transition: all 0.3s ease;
+            }
+            .button-hover:hover {
+                transform: scale(1.1);
+                box-shadow: 0 10px 25px -5px rgba(255, 75, 145, 0.4);
+            }
+            .animate-beat {
+                animation: beat 0.5s infinite alternate;
+            }
+            @keyframes beat {
+                to { transform: scale(1.05); }
+            }
+            .float-animation {
+                animation: float 3s ease-in-out infinite;
+            }
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+            .scale-up {
+                transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-pink-100 to-purple-100 font-cute flex flex-col items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-8 relative overflow-hidden">
+        <!-- 装饰元素 -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-purple-200 rounded-full blur-2xl"></div>
+        
+        <div class="relative z-10">
+            <div class="text-center mb-10">
+                <h1 class="text-[clamp(1.8rem,5vw,2.5rem)] font-bold text-primary mb-4 text-shadow float-animation">孔小松今天有没有想我呀</h1>
+                <div class="w-24 h-1 bg-gradient-to-r from-primary to-purple-400 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-700 text-lg mb-8">只能选 <span class="text-primary font-bold">想了</span> 哦~</p>
+            </div>
+            
+            <div class="flex flex-col items-center space-y-6">
+                <button id="yesBtn" class="button-hover bg-primary hover:bg-primary/90 text-white font-bold py-4 px-12 rounded-full text-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-primary/30 transition-all">
+                    想了
+                </button>
+                
+                <button id="noBtn" class="button-hover bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-4 px-12 rounded-full text-xl shadow-md focus:outline-none scale-up">
+                    没有
+                </button>
+            </div>
+            
+            <div id="result" class="mt-10 text-center hidden">
+                <div class="p-6 bg-secondary/70 rounded-2xl">
+                    <h2 id="resultText" class="text-2xl font-bold text-primary mb-0"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const result = document.getElementById('result');
+            const resultText = document.getElementById('resultText');
+            
+            let scaleFactor = 1;
+            
+            // 处理"想我了"按钮点击
+            yesBtn.addEventListener('click', function() {
+                resultText.textContent = '呕吼~ 我就知道~';
+                result.classList.remove('hidden');
+                
+                // 防止重复点击
+                yesBtn.disabled = true;
+                noBtn.disabled = true;
+            });
+            
+            // 处理"没有"按钮点击
+            noBtn.addEventListener('click', function() {
+                scaleFactor *= 1.2;
+                noBtn.style.transform = `scale(${scaleFactor})`;
+                
+                // 当按钮放大到一定程度时，移动到随机位置
+                if (scaleFactor > 1.8) {
+                    const maxX = window.innerWidth - noBtn.offsetWidth - 40;
+                    const maxY = window.innerHeight - noBtn.offsetHeight - 100;
+                    
+                    const randomX = Math.floor(Math.random() * maxX);
+                    const randomY = Math.floor(Math.random() * maxY);
+                    
+                    noBtn.style.position = 'fixed';
+                    noBtn.style.left = `${randomX}px`;
+                    noBtn.style.top = `${randomY}px`;
+                }
+                
+                // 让"想我了"按钮跳动，提示用户选择正确答案
+                yesBtn.classList.add('animate-beat');
+                setTimeout(() => {
+                    yesBtn.classList.remove('animate-beat');
+                }, 1000);
+            });
+            
+            // 为了在移动设备上更好的体验，添加触摸事件支持
+            yesBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                yesBtn.classList.add('bg-primary/80');
+            });
+            
+            yesBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                yesBtn.classList.remove('bg-primary/80');
+                yesBtn.click();
+            });
+            
+            noBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                noBtn.classList.add('bg-gray-400');
+            });
+            
+            noBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                noBtn.classList.remove('bg-gray-400');
+                noBtn.click();
+            });
+        });
+    </script>
+</body>
+</html>    
+    
